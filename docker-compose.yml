@@ -1,0 +1,26 @@
+services:
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    expose:
+      - 80
+    volumes:
+#      - ./conf:/etc/caddy
+#      - ./site:/srv
+      - ./site:/usr/share/caddy
+#      - ./data:/data
+#      - ./config:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.entrypoints=websecure"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.rule=Host(`$DOMAIN`)"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.tls.certresolver=http-challenge"
+    networks:
+      - default
+      - traefik-proxy
+networks:
+  default:
+  traefik-proxy:
+    external: true
